@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interfaz Vehículos</title>
+</head>
+<body>
+    <form id="formVehiculo">
+        Placa: <input type="text" id="placa">
+        Marca: <input type="text" id="marca">
+        Modelo: <input type="text" id="modelo">
+        <button type="submit">Guardar</button>
+    </form>
+    
+    <button type="button" id="btnListar">Listar Vehículos</button>
+    <button type="button" id="btnBuscar">Buscar Vehículo</button>
+    <button type="button" id="btnEliminar">Eliminar Vehículo</button>
+
+    <div id="resultados"></div>
+
+    <script>
+        document.getElementById('formVehiculo').addEventListener('submit', (event) => {
+            event.preventDefault(); 
+            
+            const placa = document.getElementById('placa').value;
+            const marca = document.getElementById('marca').value;
+            const modelo = document.getElementById('modelo').value;
+
+            fetch('http://localhost:3000/vehiculos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ placa, marca, modelo })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Vehículo agregado:');
+                console.log(data);
+            })
+            .catch(error => console.error('Error al agregar vehículo:', error));
+
+            document.getElementById('placa').value = '';
+            document.getElementById('marca').value = '';
+            document.getElementById('modelo').value = '';
+        });
+
+        document.getElementById('btnListar').addEventListener('click', () => {
+            fetch('http://localhost:3000/vehiculos')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Vehículos:');
+                console.log(data.vehiculos);
+            })
+            .catch(error => console.error('Error al listar vehículos:', error));
+        });
+
+        document.getElementById('btnBuscar').addEventListener('click', () => {
+            const placa = document.getElementById('placa').value;
+            
+            fetch(`http://localhost:3000/vehiculos/${placa}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Vehículo encontrado:');
+                console.log(data.vehiculo);
+            })
+            .catch(error => console.error('Error al buscar vehículo:', error));
+        });
+
+        document.getElementById('btnEliminar').addEventListener('click', () => {
+            const placa = document.getElementById('placa').value;
+            
+            fetch(`http://localhost:3000/vehiculos/${placa}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Vehículo eliminado:');
+                console.log(data);
+            })
+            .catch(error => console.error('Error al eliminar vehículo:', error));
+        });
+    </script>
+</body>
+</html>
